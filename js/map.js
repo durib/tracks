@@ -54,6 +54,15 @@ var contour = L.tileLayer.wms(listWMSUrl, {
     maxZoom:20
 });
 
+var tenure = L.tileLayer.wms(listWMSUrl, {
+    id: 'CadastreAndAdministrative',
+    layers: '47',
+    format: 'image/png',
+    transparent: true,
+    attribution: cc,
+    maxZoom:20
+});
+
 // VECTOR STYLES
 var trackStyle = {
     "color": "#ff0000",
@@ -71,11 +80,13 @@ var tracks = L.geoJSON(null,{
 var overlays = {
     "Tracks": tracks,
     "5m contour": contour,
-    "Parcels": cadParcels
+    "Parcels": cadParcels,
+	"Land Tenure": tenure
+	
 };
 
 // load vecor data
-$.getJSON('./data/ride1_track.geojson').done(function(data) {
+$.getJSON('./data/tracks.geojson').done(function(data) {
     tracks.addData(data.features);
 });
 
