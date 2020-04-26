@@ -60,7 +60,8 @@ var tenure = L.tileLayer.wms(listWMSUrl, {
     format: 'image/png',
     transparent: true,
     attribution: cc,
-    maxZoom:20
+    maxZoom:20,
+    opacity:0.5
 });
 
 // VECTOR STYLES
@@ -82,7 +83,6 @@ var overlays = {
     "5m contour": contour,
     "Parcels": cadParcels,
 	"Land Tenure": tenure
-	
 };
 
 // load vecor data
