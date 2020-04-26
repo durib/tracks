@@ -1,0 +1,9 @@
+Tracks are polylines representing the trails followed and need to be prepared as follows using QGIS
+
+1. Simplify w DC to 1m
+2. Drap (set Z values from Raster) using Toolbox
+3. Save as GeoJSON
+	3.1 CRS = EPSG"4326
+	3.2 Geometry = LineString
+	3.3 z-dim = true
+	3.4 coordinate precision = 5
