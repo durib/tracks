@@ -60,9 +60,33 @@ body {
     margin: 0;
 }
 
-html, body, .map {
+html, body {
     height: 100%;
-    width: 100vw;
+    width: 100%;
+}
+
+.map {
+  height: 60%;
+}
+
+#chart-container {
+  height: 40%;
+  width: 100%;
+}
+
+#chartdiv {
+  height: 100%;
+  width: 80%;
+  float: left;
+}
+
+#statsdiv {
+  height: 100%;
+  margin-left: 80%;
+}
+
+#elevation-chart {
+  height: 100% !important;
 }
 
 .cc {

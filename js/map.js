@@ -75,6 +75,13 @@ var tracks = L.geoJSON(null,{
     attribution: cc,
     style: function(feature) {
         return trackStyle;
+    },
+    onEachFeature: function (feature, layer) {
+        popupOptions = {};
+        layer.bindPopup("<b>Track Number:</b> " + feature.properties.track_id +
+            "<br><b>Start Time:</b> " + feature.properties.start_time +
+            "<br><b>End Time: </b>" + feature.properties.end_time
+            ,popupOptions);
     }
 });
 
@@ -99,3 +106,76 @@ var map = L.map('mapid',{
 
 L.control.layers(baseMaps, overlays).addTo(map);
 L.control.locate().addTo(map);
+
+addChart({x:0,y:0});
+
+// Chart
+map.on('popupopen', function(e){
+    track = geomToDistance(e.popup._source.feature.geometry);
+    
+    addChart(arrayToChart(track.data))
+
+    let x = document;
+    
+    document.querySelector('#totaldistance').innerHTML = track.totaldistance;
+    document.querySelector('#totalclimb').innerHTML = Math.round(track.climb)+"m";
+    document.querySelector('#totalfall').innerHTML =  Math.round(track.fall)+"m";
+});
+
+function arrayToChart(de){
+    d = []
+
+    for (i = 0; i < de.length; i++) {
+        var p = {
+            x:de[i][0],
+            y:de[i][1]
+        }
+        d.push(p);
+    } 
+    return d;
+}
+
+function geomToDistance(geom){
+    let coords = geom.coordinates;
+    let td = 0;
+    let c = 0
+    let f = 0
+    let d = [];
+
+    for (i = 0; i < coords.length-1; i++) {
+        let deltax = coords[i][0] - coords[i+1][0];
+        let deltay = coords[i][1] - coords[i+1][1];
+        let distance = Math.sqrt(deltax*deltax + deltay*deltay);
+        td = td + distance;
+
+        if (coords[i][2] < coords[i+1][2]){
+            c = c + coords[i+1][2] - coords[i][2];
+        } else {
+            f = f + coords[i][2] - coords[i+1][2];
+        }
+        d.push([td,coords[i][2]]);
+    }
+
+    return {data:d,climb:c,fall:f,totaldistance:td};
+}
+
+function addChart(data) {
+    let ctx = document.getElementById('elevation-chart');
+    let scatterChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'Elevation',
+                data: data
+            }]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    type: 'linear',
+                    position: 'bottom'
+                }]
+            }
+        }
+    })
+};
