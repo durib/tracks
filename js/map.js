@@ -100,14 +100,32 @@ function onLocationFound(e) {
 }
 
 // CHART
-addChart({x:0,y:0});
+var ctx = document.getElementById('elevation-chart');
+var chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        datasets: [{
+            label: 'Elevation',
+            data: {x:0,y:0}
+        }]
+    },
+    options: {
+        scales: {
+            xAxes: [{
+                type: 'linear',
+                position: 'bottom'
+            }]
+        }
+    }
+});
 
 // show chart on layer click
 map.on('popupopen', function(e){
     let x = document;
     let data = geomToDistance(e.popup._source.feature.geometry);
 
-    addChart(data.xy);
+    chart.data.datasets[0].data = data.xy;
+    chart.update();
     
     document.querySelector('#totaldistance').innerHTML = data.totaldistance;
     document.querySelector('#totalclimb').innerHTML = Math.round(data.climb)+"m";
@@ -146,29 +164,6 @@ function geomToDistance(geom){
 
     return {xy:d,climb:c,fall:f,totaldistance:td};
 }
-
-// add data to chart
-function addChart(data) {
-    let ctx = document.getElementById('elevation-chart');
-    
-    let scatterChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            datasets: [{
-                label: 'Elevation',
-                data: data
-            }]
-        },
-        options: {
-            scales: {
-                xAxes: [{
-                    type: 'linear',
-                    position: 'bottom'
-                }]
-            }
-        }
-    })
-};
 
 // ERROR
 function onError(e) {
