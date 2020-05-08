@@ -1,16 +1,3 @@
-function onLocationFound(e) {
-    var radius = e.accuracy / 2;
-
-    L.marker(e.latlng).addTo(map)
-        .bindPopup("You are within " + radius + " meters from this point").openPopup();
-
-    L.circle(e.latlng, radius).addTo(map);
-}
-
-function onError(e) {
-    alert(e.message);
-}
-
 // BASEMAPS
 var listBasemapUrl = 'https://services.thelist.tas.gov.au/arcgis/rest/services/Basemaps/{id}/MapServer/tile/{z}/{y}/{x}'; 
 var listWMSUrl = 'http://services.thelist.tas.gov.au/arcgis/services/Public/{id}/MapServer/WMSServer?';
@@ -64,17 +51,12 @@ var tenure = L.tileLayer.wms(listWMSUrl, {
     opacity:0.5
 });
 
-// VECTOR STYLES
-var trackStyle = {
-    "color": "#ff0000",
-    "weight": 3
-};
-
 // VECTOR LAYERS
 var tracks = L.geoJSON(null,{
     attribution: cc,
-    style: function(feature) {
-        return trackStyle;
+    style: {
+        "color": "#ff0000",
+        "weight": 3
     },
     onEachFeature: function (feature, layer) {
         popupOptions = {};
@@ -85,17 +67,17 @@ var tracks = L.geoJSON(null,{
     }
 });
 
+// load vecor data
+$.getJSON('./data/tracks.geojson').done(function(data) {
+    tracks.addData(data.features);
+});
+
 var overlays = {
     "Tracks": tracks,
     "5m contour": contour,
     "Parcels": cadParcels,
 	"Land Tenure": tenure
 };
-
-// load vecor data
-$.getJSON('./data/tracks.geojson').done(function(data) {
-    tracks.addData(data.features);
-});
 
 // MAP & CONTROLS
 var map = L.map('mapid',{
@@ -107,34 +89,32 @@ var map = L.map('mapid',{
 L.control.layers(baseMaps, overlays).addTo(map);
 L.control.locate().addTo(map);
 
-addChart({x:0,y:0});
+// Geolocation found
+function onLocationFound(e) {
+    let radius = e.accuracy / 2;
 
-// Chart
-map.on('popupopen', function(e){
-    track = geomToDistance(e.popup._source.feature.geometry);
-    
-    addChart(arrayToChart(track.data))
+    L.marker(e.latlng).addTo(map)
+        .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
-    let x = document;
-    
-    document.querySelector('#totaldistance').innerHTML = track.totaldistance;
-    document.querySelector('#totalclimb').innerHTML = Math.round(track.climb)+"m";
-    document.querySelector('#totalfall').innerHTML =  Math.round(track.fall)+"m";
-});
-
-function arrayToChart(de){
-    d = []
-
-    for (i = 0; i < de.length; i++) {
-        var p = {
-            x:de[i][0],
-            y:de[i][1]
-        }
-        d.push(p);
-    } 
-    return d;
+    L.circle(e.latlng, radius).addTo(map);
 }
 
+// CHART
+addChart({x:0,y:0});
+
+// show chart on layer click
+map.on('popupopen', function(e){
+    let x = document;
+    let data = geomToDistance(e.popup._source.feature.geometry);
+
+    addChart(data.xy);
+    
+    document.querySelector('#totaldistance').innerHTML = data.totaldistance;
+    document.querySelector('#totalclimb').innerHTML = Math.round(data.climb)+"m";
+    document.querySelector('#totalfall').innerHTML =  Math.round(data.fall)+"m";
+});
+
+// calculate distance-elevation object from geometry
 function geomToDistance(geom){
     let coords = geom.coordinates;
     let td = 0;
@@ -156,17 +136,21 @@ function geomToDistance(geom){
             f = f + coords[i][2] - coords[i+1][2];
         }
         if (sd >= 0.001) {
-            d.push([td,coords[i][2]]);
+            d.push({
+                x:td,
+                y:coords[i][2]
+            });
             sd = 0;
         }
-        
     }
 
-    return {data:d,climb:c,fall:f,totaldistance:td};
+    return {xy:d,climb:c,fall:f,totaldistance:td};
 }
 
+// add data to chart
 function addChart(data) {
     let ctx = document.getElementById('elevation-chart');
+    
     let scatterChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -185,3 +169,8 @@ function addChart(data) {
         }
     })
 };
+
+// ERROR
+function onError(e) {
+    alert(e.message);
+}
