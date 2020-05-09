@@ -52,6 +52,8 @@ var tenure = L.tileLayer.wms(listWMSUrl, {
 });
 
 // VECTOR LAYERS
+var colours = ['Red','Maroon','Yellow','Lime','Green','Aqua','Blue','Fuchsia','Purple'];
+
 var tracks = L.geoJSON(null,{
     attribution: cc,
     style: {
@@ -64,6 +66,10 @@ var tracks = L.geoJSON(null,{
             "<br><b>Start Time:</b> " + feature.properties.start_time +
             "<br><b>End Time: </b>" + feature.properties.end_time
             ,popupOptions);
+        layer.setStyle({
+            color: colours[(feature.properties.track_id-1) % colours.length],
+            weight: 3        
+        });
     }
 });
 
@@ -123,8 +129,6 @@ var chart = new Chart(ctx, {
 map.on('popupopen', function(e){
     let x = document;
     let data = geomToDistance(e.popup._source.feature.geometry);
-
-    console.log(data);
 
     chart.data.datasets[0].data = data.chartdata;
     chart.update(0);
