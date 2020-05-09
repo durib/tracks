@@ -52,7 +52,7 @@ var tenure = L.tileLayer.wms(listWMSUrl, {
 });
 
 // VECTOR LAYERS
-var colours = ['Red','Maroon','Yellow','Lime','Green','Aqua','Blue','Fuchsia','Purple'];
+var colours = ['Red','Green','Aqua','Maroon','Blue','Lime','Fuchsia','Purple','Yellow'];
 
 var tracks = L.geoJSON(null,{
     attribution: cc,

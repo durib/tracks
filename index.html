@@ -70,10 +70,12 @@
         <canvas id='elevation-chart'></canvas>
       </div>
       <div id="statsdiv">
-        <h4>Stats</h4>
-        <b>Total Distance :</b><div id="totaldistance"></div>
-        <b>Total Climb :</b><div id="totalclimb"></div>
-        <b>Total Fall :</b><div id="totalfall"></div>
+        <table>
+          <tr><th colspan="2"><h5><strong>Stats</strong></h5></th></tr>
+          <tr><td><b>Total Distance:</b></td><td><div id="totaldistance"></div></td></tr>
+          <tr><td><b>Total Climb:</b></td><td><div id="totalclimb"></div></td></tr>
+          <tr><td><b>Total Fall:</b></td><td><div id="totalfall"></div></td></tr>
+      </table>
       </div>
     </section>
    
@@ -105,7 +107,7 @@
 
     <!-- Leaflet Plugin -->
     <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@v0.71.1/dist/L.Control.Locate.min.js" charset="utf-8"></script>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.1/proj4.js"></script>
 
     <!-- Chart JavaScript -->
