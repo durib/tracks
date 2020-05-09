@@ -124,10 +124,12 @@ map.on('popupopen', function(e){
     let x = document;
     let data = geomToDistance(e.popup._source.feature.geometry);
 
-    chart.data.datasets[0].data = data.xy;
-    chart.update();
+    console.log(data);
+
+    chart.data.datasets[0].data = data.chartdata;
+    chart.update(0);
     
-    document.querySelector('#totaldistance').innerHTML = data.totaldistance;
+    document.querySelector('#totaldistance').innerHTML = Math.round(data.totaldistance)+"m";
     document.querySelector('#totalclimb').innerHTML = Math.round(data.climb)+"m";
     document.querySelector('#totalfall').innerHTML =  Math.round(data.fall)+"m";
 });
@@ -139,22 +141,33 @@ function geomToDistance(geom){
     let sd = 0;
     let c = 0;
     let f = 0;
-    let d = [];
+    let xy = [];
+
+    //reproject to EPSG:28355 so distance is in metres
+    let epsg28355 = '+proj=utm +zone=55 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
+    let p1 = proj4(epsg28355,[coords[0][0],coords[0][1]]);
+    let p2 = 0;
 
     for (i = 0; i < coords.length-1; i++) {
-        let deltax = coords[i][0] - coords[i+1][0];
-        let deltay = coords[i][1] - coords[i+1][1];
+        p2 = proj4(epsg28355,[coords[i+1][0],coords[i+1][1]]);
+
+        // calculate distance traveled
+        let deltax = p1[0] - p2[0];
+        let deltay = p1[1] - p2[1];
         let distance = Math.sqrt(deltax*deltax + deltay*deltay);
         sd = sd + distance;
         td = td + distance;
 
+        p1 = p2;
+
+        // calculate climb/fall
         if (coords[i][2] < coords[i+1][2]){
             c = c + coords[i+1][2] - coords[i][2];
         } else {
             f = f + coords[i][2] - coords[i+1][2];
         }
-        if (sd >= 0.001) {
-            d.push({
+        if (sd >= 100) {
+            xy.push({
                 x:td,
                 y:coords[i][2]
             });
@@ -162,7 +175,7 @@ function geomToDistance(geom){
         }
     }
 
-    return {xy:d,climb:c,fall:f,totaldistance:td};
+    return {chartdata:xy,climb:c,fall:f,totaldistance:td};
 }
 
 // ERROR
