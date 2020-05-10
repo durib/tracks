@@ -97,4 +97,6 @@ td {
 @media (max-width : 900px) {
   #statsdiv {height: unset; margin-left: unset;}
   #chartdiv {width: 100%; float: unset;}
+  #sideNav {visibility: hidden;}
+  body {padding-top: unset;}
 }

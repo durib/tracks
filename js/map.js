@@ -128,12 +128,17 @@ var chart = new Chart(ctx, {
 // show chart on layer click
 map.on('popupopen', function(e){
     let x = document;
+    let start = new Date(e.popup._source.feature.properties.start_time);
+    let end = new Date(e.popup._source.feature.properties.end_time);
+    let time_min = (end.getTime()-start.getTime())/60000;
     let data = geomToDistance(e.popup._source.feature.geometry);
 
     chart.data.datasets[0].data = data.chartdata;
     chart.update(0);
     
     document.querySelector('#totaldistance').innerHTML = Math.round(data.totaldistance).toLocaleString()+"m";
+    document.querySelector('#totaltime').innerHTML = Math.round(time_min)+"min";
+    document.querySelector('#averagespeed').innerHTML = Math.round((data.totaldistance/1000)/(time_min/60)*10)/10+"km/h";
     document.querySelector('#totalclimb').innerHTML = Math.round(data.climb).toLocaleString()+"m";
     document.querySelector('#totalfall').innerHTML =  Math.round(data.fall).toLocaleString()+"m";
 });
