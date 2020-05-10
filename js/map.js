@@ -133,9 +133,9 @@ map.on('popupopen', function(e){
     chart.data.datasets[0].data = data.chartdata;
     chart.update(0);
     
-    document.querySelector('#totaldistance').innerHTML = Math.round(data.totaldistance)+"m";
-    document.querySelector('#totalclimb').innerHTML = Math.round(data.climb)+"m";
-    document.querySelector('#totalfall').innerHTML =  Math.round(data.fall)+"m";
+    document.querySelector('#totaldistance').innerHTML = Math.round(data.totaldistance).toLocaleString()+"m";
+    document.querySelector('#totalclimb').innerHTML = Math.round(data.climb).toLocaleString()+"m";
+    document.querySelector('#totalfall').innerHTML =  Math.round(data.fall).toLocaleString()+"m";
 });
 
 // calculate distance-elevation object from geometry
